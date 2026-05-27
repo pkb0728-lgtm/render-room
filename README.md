@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Render Room
+
+Render Room is an AI product-photo studio built with Next.js. Upload a product image, choose a visual direction, and generate a polished commercial product shot with either GPT Image or Gemini Image.
+
+## Features
+
+- Product image upload with PNG, JPEG, and WEBP validation
+- Optional mood reference image for lighting and color direction
+- AI provider switcher: GPT Image or Gemini Image
+- Studio-style options for mood, lighting, background, lens, aspect ratio, and quality
+- Before / after preview
+- Prompt preview for transparency and iteration
+- One-click result download
+
+## Tech Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- OpenAI Images API
+- Google Gemini Image API
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a local environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+On Windows PowerShell, you can use:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Fill in your API keys in `.env.local`:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_IMAGE_MODEL=gpt-image-2
+
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_IMAGE_MODEL=gemini-3.1-flash-image-preview
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+| Name | Required | Description |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | Yes, for GPT Image | OpenAI API key used when GPT Image is selected |
+| `OPENAI_IMAGE_MODEL` | No | Defaults to `gpt-image-2` |
+| `GEMINI_API_KEY` | Yes, for Gemini Image | Gemini API key used when Gemini Image is selected |
+| `GEMINI_IMAGE_MODEL` | No | Defaults to `gemini-3.1-flash-image-preview` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project uses a Next.js API route, so deploy it to a platform that supports server-side routes, such as Vercel. Add the same environment variables in the deployment dashboard before testing image generation.
 
-## Deploy on Vercel
+## Portfolio Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Render Room demonstrates a practical multimodal AI workflow: image upload, prompt construction, provider selection, server-side API orchestration, and generated asset delivery. It is designed as a small but complete product workflow rather than a static demo.
