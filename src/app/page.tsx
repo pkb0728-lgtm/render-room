@@ -30,8 +30,10 @@ export default function Home() {
     setAfterBase64(null);
     try {
       const fd = new FormData();
-      fd.append('productImage', productFile);
-      if (moodFile) fd.append('moodReferenceImage', moodFile);
+      const preparedProductFile = await prepareImageForUpload(productFile);
+      const preparedMoodFile = moodFile ? await prepareImageForUpload(moodFile) : null;
+      fd.append('productImage', preparedProductFile);
+      if (preparedMoodFile) fd.append('moodReferenceImage', preparedMoodFile);
       fd.append('options', JSON.stringify(options));
 
       const res = await fetch('/api/render', { method: 'POST', body: fd });
@@ -93,4 +95,74 @@ export default function Home() {
       </div>
     </div>
   );
+}
+
+async function prepareImageForUpload(file: File) {
+  const maxBytes = 1.8 * 1024 * 1024;
+  const maxDimension = 1600;
+
+  if (file.size <= maxBytes) {
+    return file;
+  }
+
+  const image = await loadImage(file);
+  const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(image.width * scale));
+  canvas.height = Math.max(1, Math.round(image.height * scale));
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return file;
+  }
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+  for (const quality of [0.88, 0.78, 0.68, 0.58]) {
+    const blob = await canvasToBlob(canvas, 'image/jpeg', quality);
+    if (blob.size <= maxBytes || quality === 0.58) {
+      return new File([blob], replaceExtension(file.name, 'jpg'), { type: 'image/jpeg' });
+    }
+  }
+
+  return file;
+}
+
+function loadImage(file: File) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('이미지를 압축할 수 없습니다.'));
+    };
+    image.src = url;
+  });
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number) {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error('이미지를 압축할 수 없습니다.'));
+        }
+      },
+      type,
+      quality,
+    );
+  });
+}
+
+function replaceExtension(fileName: string, extension: string) {
+  const baseName = fileName.replace(/\.[^.]+$/, '');
+  return `${baseName}.${extension}`;
 }
