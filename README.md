@@ -2,6 +2,11 @@
 
 Render Room은 제품 사진을 업로드하면 AI가 광고용 제품 이미지처럼 다시 렌더링해주는 Next.js 기반 웹 애플리케이션입니다. 사용자는 제품 이미지와 선택적인 무드 참고 이미지를 올리고, GPT 이미지 또는 Gemini 이미지 모델을 선택해 상업용 제품 컷을 생성할 수 있습니다.
 
+## 데모
+
+- 배포 주소: https://render-room.vercel.app
+- GitHub 저장소: https://github.com/pkb0728-lgtm/render-room
+
 ## 주요 기능
 
 - 제품 이미지 업로드 및 PNG, JPEG, WEBP 형식 검증
@@ -99,6 +104,12 @@ npm run lint
 이 프로젝트는 Next.js API Route를 사용하므로 GitHub Pages가 아니라 Vercel처럼 서버 사이드 라우트를 지원하는 플랫폼에 배포하는 것이 적합합니다.
 
 Vercel에 배포할 때는 프로젝트의 환경변수 설정 화면에 `.env.local`과 같은 값을 등록해야 이미지 생성 기능이 정상 동작합니다.
+
+현재 배포 주소:
+
+```text
+https://render-room.vercel.app
+```
 
 ## 보안 안내
 
