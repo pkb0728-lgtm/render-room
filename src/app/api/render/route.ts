@@ -37,6 +37,11 @@ export async function POST(req: Request) {
     const product = form.get('productImage') as File | null;
     const mood = form.get('moodReferenceImage') as File | null;
     const optionsRaw = form.get('options')?.toString() ?? '{}';
+    const accessCode = form.get('accessCode')?.toString() ?? '';
+
+    if (!isAuthorized(accessCode)) {
+      return NextResponse.json({ error: '포트폴리오 데모는 소유자만 이미지 생성이 가능합니다.' }, { status: 403 });
+    }
 
     if (!product) {
       return NextResponse.json({ error: 'Please upload a product image.' }, { status: 400 });
@@ -117,7 +122,7 @@ async function generateWithOpenAI({
 }) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!isConfiguredKey(apiKey)) {
-    throw new Error('OPENAI_API_KEY is not configured in .env.local.');
+    throw new Error('OPENAI_API_KEY is not configured.');
   }
 
   const client = new OpenAI({ apiKey });
@@ -161,7 +166,7 @@ async function generateWithGemini({
 }) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!isConfiguredKey(apiKey)) {
-    throw new Error('GEMINI_API_KEY is not configured in .env.local.');
+    throw new Error('GEMINI_API_KEY is not configured.');
   }
 
   const model = normalizeGeminiModel(process.env.GEMINI_IMAGE_MODEL ?? 'gemini-2.5-flash-image');
@@ -219,11 +224,16 @@ async function generateWithGemini({
 }
 
 function isConfiguredKey(value: string | undefined): value is string {
-  return Boolean(value && !value.includes('여기에') && !value.includes('?'));
+  return Boolean(value && !value.includes('여기에') && !value.includes('your_') && !value.includes('?'));
 }
 
 function normalizeGeminiModel(model: string) {
   return model.replace(/^models\//, '');
+}
+
+function isAuthorized(accessCode: string) {
+  const expectedCode = process.env.RENDER_ACCESS_CODE;
+  return Boolean(expectedCode && accessCode === expectedCode);
 }
 
 function getErrorMessage(error: unknown) {

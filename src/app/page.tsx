@@ -12,6 +12,7 @@ export default function Home() {
   const [productFile, setProductFile] = useState<File | null>(null);
   const [moodFile, setMoodFile] = useState<File | null>(null);
   const [options, setOptions] = useState<RenderOptions>(defaultOptions);
+  const [accessCode, setAccessCode] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [afterBase64, setAfterBase64] = useState<string | null>(null);
@@ -26,6 +27,11 @@ export default function Home() {
       return;
     }
 
+    if (!accessCode.trim()) {
+      setErrorMessage('포트폴리오 데모는 접근 코드가 있어야 실제 이미지 생성이 가능합니다.');
+      return;
+    }
+
     setLoading(true);
     setAfterBase64(null);
     try {
@@ -35,6 +41,7 @@ export default function Home() {
       fd.append('productImage', preparedProductFile);
       if (preparedMoodFile) fd.append('moodReferenceImage', preparedMoodFile);
       fd.append('options', JSON.stringify(options));
+      fd.append('accessCode', accessCode.trim());
 
       const res = await fetch('/api/render', { method: 'POST', body: fd });
       const data = await res.json();
@@ -77,7 +84,19 @@ export default function Home() {
 
           <OptionPanel options={options} setOptions={setOptions} />
 
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-lg shadow p-4 space-y-3">
+            <div>
+              <label className="block text-sm text-gray-600">접근 코드</label>
+              <input
+                type="password"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value)}
+                className="w-full p-2 border rounded"
+                placeholder="Owner access code"
+                autoComplete="off"
+              />
+            </div>
+
             <button
               className="w-full px-4 py-2 bg-black text-white rounded disabled:opacity-50"
               onClick={handleGenerate}
@@ -85,7 +104,7 @@ export default function Home() {
             >
               {loading ? '생성 중...' : 'Generate'}
             </button>
-            {errorMessage && <div className="mt-2 text-sm text-red-600">{errorMessage}</div>}
+            {errorMessage && <div className="text-sm text-red-600">{errorMessage}</div>}
           </div>
         </div>
 
