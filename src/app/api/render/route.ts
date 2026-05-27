@@ -9,8 +9,8 @@ const allowedImageTypes = ['image/png', 'image/jpeg', 'image/webp'];
 type GeminiRequestPart =
   | { text: string }
   | {
-      inline_data: {
-        mime_type: string;
+      inlineData: {
+        mimeType: string;
         data: string;
       };
     };
@@ -164,7 +164,7 @@ async function generateWithGemini({
     throw new Error('GEMINI_API_KEY is not configured in .env.local.');
   }
 
-  const model = process.env.GEMINI_IMAGE_MODEL ?? 'gemini-3.1-flash-image-preview';
+  const model = normalizeGeminiModel(process.env.GEMINI_IMAGE_MODEL ?? 'gemini-2.5-flash-image');
   const parts: GeminiRequestPart[] = [
     {
       text: mood
@@ -172,8 +172,8 @@ async function generateWithGemini({
         : prompt,
     },
     {
-      inline_data: {
-        mime_type: product.type,
+      inlineData: {
+        mimeType: product.type,
         data: productBuf.toString('base64'),
       },
     },
@@ -181,8 +181,8 @@ async function generateWithGemini({
 
   if (mood && moodBuf) {
     parts.push({
-      inline_data: {
-        mime_type: mood.type,
+      inlineData: {
+        mimeType: mood.type,
         data: moodBuf.toString('base64'),
       },
     });
@@ -197,7 +197,7 @@ async function generateWithGemini({
     body: JSON.stringify({
       contents: [{ role: 'user', parts }],
       generationConfig: {
-        responseModalities: ['IMAGE'],
+        responseModalities: ['TEXT', 'IMAGE'],
       },
     }),
   });
@@ -220,6 +220,10 @@ async function generateWithGemini({
 
 function isConfiguredKey(value: string | undefined): value is string {
   return Boolean(value && !value.includes('여기에') && !value.includes('?'));
+}
+
+function normalizeGeminiModel(model: string) {
+  return model.replace(/^models\//, '');
 }
 
 function getErrorMessage(error: unknown) {

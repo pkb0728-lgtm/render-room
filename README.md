@@ -66,7 +66,7 @@ OPENAI_API_KEY=your_openai_api_key
 OPENAI_IMAGE_MODEL=gpt-image-2
 
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_IMAGE_MODEL=gemini-3.1-flash-image-preview
+GEMINI_IMAGE_MODEL=gemini-2.5-flash-image
 ```
 
 개발 서버를 실행합니다.
@@ -97,7 +97,7 @@ npm run lint
 | `OPENAI_API_KEY` | GPT 이미지 사용 시 필수 | OpenAI 이미지 생성 API 키 |
 | `OPENAI_IMAGE_MODEL` | 선택 | 기본값은 `gpt-image-2` |
 | `GEMINI_API_KEY` | Gemini 이미지 사용 시 필수 | Gemini 이미지 생성 API 키 |
-| `GEMINI_IMAGE_MODEL` | 선택 | 기본값은 `gemini-3.1-flash-image-preview` |
+| `GEMINI_IMAGE_MODEL` | 선택 | 기본값은 `gemini-2.5-flash-image` |
 
 ## 배포
 
